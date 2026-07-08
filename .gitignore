@@ -1,0 +1,15 @@
+# PHP
+backend/config/config.php
+
+# Node / Next
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/.env.local
+
+# misc
+.DS_Store
+*.log
+
+# uploaded brand assets
+backend/public/uploads/
