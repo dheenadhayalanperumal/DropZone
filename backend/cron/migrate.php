@@ -23,3 +23,4 @@ foreach ($files as $f) {
     fwrite(STDOUT, "ok\n");
 }
 fwrite(STDOUT, "All migrations applied.\n");
+    

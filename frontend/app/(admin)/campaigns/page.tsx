@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
 import { useRouter, useSearchParams } from 'next/navigation';
+import DatePicker from '@/components/DatePicker';
 
 type Campaign = {
   id: number;
@@ -148,8 +149,8 @@ function CampaignCreate() {
       <div className="card">
         <label className="field"><span>Name</span><input value={campaign.name} onChange={(e) => set('name', e.target.value)} /></label>
         <label className="field"><span>Description</span><textarea value={campaign.description} onChange={(e) => set('description', e.target.value)} /></label>
-        <label className="field"><span>Start Date</span><input type="date" value={campaign.start_date.split('T')[0]} onChange={(e) => set('start_date', e.target.value)} /></label>
-        <label className="field"><span>End Date</span><input type="date" value={campaign.end_date.split('T')[0]} onChange={(e) => set('end_date', e.target.value)} /></label>
+        <label className="field"><span>Start Date</span><DatePicker value={(campaign.start_date ?? '').split('T')[0]} onChange={(v) => set('start_date', v)} /></label>
+        <label className="field"><span>End Date</span><DatePicker value={(campaign.end_date ?? '').split('T')[0]} onChange={(v) => set('end_date', v)} /></label>
         <label className="field">
           <span>Type</span>
           <select value={campaign.type} onChange={(e) => set('type', e.target.value)}>

@@ -43,7 +43,8 @@ export default function BrandingPage() {
       const { url } = await api<{ url: string }>('/api/admin/upload', {
         method: 'POST', admin: true, body: JSON.stringify({ data: dataUrl, filename: file.name }),
       });
-      set('logo', API_BASE + url);
+      const isAbsolute = /^(https?:|data:)/i.test(url);
+      set('logo', isAbsolute ? url : API_BASE + url);
     } catch (e: any) { setErr(e.message); }
     finally { setUploading(false); if (fileRef.current) fileRef.current.value = ''; }
   }

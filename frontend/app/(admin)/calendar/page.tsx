@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { api } from '@/lib/api';
+import DatePicker from '@/components/DatePicker';
 
 type Campaign = {
   id: number; name: string; description?: string; type: string; duration_days: number;
@@ -13,7 +14,7 @@ type Drop = {
   title: string; open_at: string; close_at: string;
   reward_title?: string; reward_type?: string;
 };
-type Voucher = { id: number; title: string; type: string };
+type Voucher = { id: number; title: string; type: string; image?: string | null };
 
 export default function CalendarPage() {
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
@@ -163,7 +164,7 @@ function CampaignForm({ onClose, onSaved }: { onClose: () => void; onSaved: (id:
           <label className="field"><span>Custom days</span><input type="number" value={f.custom_duration_days || ''} onChange={(e) => set('custom_duration_days', e.target.value)} /></label>
         )}
         <div className="grid-2">
-          <label className="field"><span>Start date</span><input type="date" value={f.start_date} onChange={(e) => set('start_date', e.target.value)} /></label>
+          <label className="field"><span>Start date</span><DatePicker value={f.start_date} onChange={(v) => set('start_date', v)} /></label>
           <label className="field"><span>Grace hours</span><input type="number" value={f.grace_hours} onChange={(e) => set('grace_hours', e.target.value)} /></label>
         </div>
         <label className="field"><span>Timezone</span><input value={f.timezone} onChange={(e) => set('timezone', e.target.value)} /></label>

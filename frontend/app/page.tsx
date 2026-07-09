@@ -205,6 +205,7 @@ function HowItWorks() {
 /* ---------------- Play view ---------------- */
 function Play({ brand, user, drops, reload, signOut }: { brand: Brand; user: { id: number; identifier: string }; drops: Drop[]; reload: () => Promise<void>; signOut: () => void; }) {
   const [reveal, setReveal] = useState<{ resp: OpenResp; drop: Drop } | null>(null);
+  const [showRewards, setShowRewards] = useState(false);
   const [boxOpen, setBoxOpen] = useState(false);
   const [armed, setArmed] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -214,7 +215,7 @@ function Play({ brand, user, drops, reload, signOut }: { brand: Brand; user: { i
   // The drop the stage focuses on: the box whose window contains "now" (today's
   // box — whether still available or just opened), else the next live/upcoming one.
   const now = Date.now();
-  const ts = (s: string) => new Date(s.replace(' ', 'T')).getTime();
+  const ts = (s: string) => new Date(s.replace(/\s+/g, 'T').replace(/T\S+$/, (m) => m.split('+')[0])).getTime();
   const focus = drops.find((d) => ts(d.open_at) <= now && now <= ts(d.close_at))
     || drops.find((d) => d.status === 'available')
     || drops.find((d) => d.status !== 'opened' && d.status !== 'missed')
@@ -267,8 +268,7 @@ function Play({ brand, user, drops, reload, signOut }: { brand: Brand; user: { i
           </span>
         </span>
         <p className="dz-sub">{brand.welcome_headline || 'Open a box every day. Miss a day — miss the reward.'}</p>
-        <button onClick={reload} className="dz-link">Reload</button>
-       
+        
       </div>
 
       <p className="dz-eyebrow">Today’s box · tap to open</p>
@@ -328,8 +328,8 @@ function Play({ brand, user, drops, reload, signOut }: { brand: Brand; user: { i
       </section>
 
       <section className="dz-signout">
-        
-        <button onClick={signOut} className="dz-link">not {user.identifier} signout</button>
+        <button onClick={() => setShowRewards(true)} className="dz-link" style={{ marginRight: 20 }}>🎁 My Rewards</button>
+        <button onClick={signOut} className="dz-link">Sign out ({user.identifier})</button>
       </section>
 
       {reveal && (
@@ -338,6 +338,7 @@ function Play({ brand, user, drops, reload, signOut }: { brand: Brand; user: { i
           onClose={async () => { setReveal(null); await reload(); }}
         />
       )}
+      {showRewards && <RewardsDrawer user={user} onClose={() => setShowRewards(false)} />}
     </div>
   );
 }
@@ -414,7 +415,11 @@ function RewardsDrawer({ user, onClose }: { user: { id: number; identifier: stri
           <div className="dz-rewards">
             {rows.map((r) => (
               <div key={r.id} className="dz-reward-row">
-                <div className="rw-ic">{rewardEmoji(r.type)}</div>
+                <div className="rw-ic">
+                  {r.image
+                    ? <img src={r.image} alt="" style={{ width: 32, height: 32, objectFit: 'cover', borderRadius: 8 }} />
+                    : rewardEmoji(r.type)}
+                </div>
                 <div className="rw-main">
                   <b>{r.title}</b>
                   <small>{r.code ? `Code ${r.code}` : r.value || ''}{r.expires_at ? ` · exp ${new Date(r.expires_at).toLocaleDateString()}` : ''}</small>
