@@ -499,7 +499,27 @@ const server = http.createServer(async (req, res) => {
     const id = Number(userMatch[1]);
     const detail = userDetail[id];
     if (!detail) return err(res, 'not_found', 'User not found', 404);
-    return json(res, { user: detail });
+    const boxes = (detail.boxes || []).map((b, i) => ({
+      id: i + 1,
+      drop_index: i + 1,
+      drop_title: b.drop_title,
+      campaign_name: b.campaign,
+      status: b.status,
+      opened_at: b.opened_at,
+    }));
+    const rewards = (detail.reward_issues || []).map((ri) => {
+      const v = vouchers.find((v) => v.id === ri.reward_id) || {};
+      return {
+        id: ri.id, title: ri.reward, type: v.type || 'coupon', value: v.value || null,
+        code: ri.code || null, status: ri.status, issued_at: ri.issued_at,
+        redeemed_at: ri.status === 'redeemed' ? ri.issued_at : null,
+        expires_at: ri.expires_at || null,
+      };
+    });
+    return json(res, {
+      id: detail.id, name: detail.name, identifier: detail.identifier, created_at: detail.created_at,
+      boxes, rewards, events: [],
+    });
   }
 
   const adjustBoxMatch = path.match(/^\/api\/admin\/users\/(\d+)\/adjust-box$/);
