@@ -85,7 +85,20 @@ final class Auth
 
     private static function bearerToken(): ?string
     {
-        $header = $_SERVER['HTTP_AUTHORIZATION'] ?? '';
+        // Apache's rewrite-to-index.php triggers an internal redirect, which renames
+        // any env var set by an earlier RewriteRule (our Authorization forwarding)
+        // with a REDIRECT_ prefix on the second pass — so both names must be checked.
+        $header = $_SERVER['HTTP_AUTHORIZATION']
+            ?? $_SERVER['REDIRECT_HTTP_AUTHORIZATION']
+            ?? '';
+        if ($header === '' && function_exists('getallheaders')) {
+            foreach (getallheaders() as $name => $value) {
+                if (strcasecmp($name, 'Authorization') === 0) {
+                    $header = $value;
+                    break;
+                }
+            }
+        }
         if ($header === '' && function_exists('apache_request_headers')) {
             $header = apache_request_headers()['Authorization'] ?? '';
         }

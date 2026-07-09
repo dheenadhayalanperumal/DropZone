@@ -1,6 +1,8 @@
 // Shared API client for DropZone admin + customer frontends.
-export const API_BASE =
-  process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:8080';
+// Empty string = same-origin relative calls (e.g. "/api/..."), used for
+// production builds where the PHP API is served from the same domain.
+// Local dev overrides this via frontend/.env.local (NEXT_PUBLIC_API_BASE=http://localhost:8080).
+export const API_BASE = process.env.NEXT_PUBLIC_API_BASE ?? '';
 
 export class ApiError extends Error {
   code: string;

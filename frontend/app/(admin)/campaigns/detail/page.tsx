@@ -1,7 +1,7 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { api } from '@/lib/api';
-import { useParams, useRouter } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import DatePicker from '@/components/DatePicker';
 
 type Campaign = {
@@ -21,13 +21,20 @@ type Campaign = {
 };
 
 export default function CampaignEditPage() {
+  return (
+    <Suspense fallback={<div className="muted">Loading…</div>}>
+      <CampaignEditInner />
+    </Suspense>
+  );
+}
+
+function CampaignEditInner() {
   const [campaign, setCampaign] = useState<Campaign | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
-  const params = useParams();
   const router = useRouter();
-  const id = params.id;
+  const id = useSearchParams().get('id');
 
   useEffect(() => {
     if (!id) return;

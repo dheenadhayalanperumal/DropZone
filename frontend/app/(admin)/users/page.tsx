@@ -45,7 +45,7 @@ export default function UsersPage() {
           </thead>
           <tbody>
             {filtered.map((u) => (
-              <tr key={u.id} style={{ cursor: 'pointer' }} onClick={() => router.push(`/users/${u.id}`)}>
+              <tr key={u.id} style={{ cursor: 'pointer' }} onClick={() => router.push(`/users/detail?id=${u.id}`)}>
                 <td>
                   <div className="row">
                     <span className="avatar">{(u.name || u.identifier).slice(0, 1).toUpperCase()}</span>

@@ -1,6 +1,6 @@
 'use client';
-import { useCallback, useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
+import { Suspense, useCallback, useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { api } from '@/lib/api';
 
@@ -18,7 +18,15 @@ type UserDetail = {
 const EVENT_ICON: Record<string, string> = { open: '📦', reveal: '🎁', issue: '🎟️', miss: '⌛', adjust: '🔧', complete: '🏁', enroll: '✅' };
 
 export default function UserDetailPage() {
-  const { id } = useParams<{ id: string }>();
+  return (
+    <Suspense fallback={<div className="muted">Loading…</div>}>
+      <UserDetailInner />
+    </Suspense>
+  );
+}
+
+function UserDetailInner() {
+  const id = useSearchParams().get('id');
   const [user, setUser] = useState<UserDetail | null>(null);
   const [err, setErr] = useState('');
 

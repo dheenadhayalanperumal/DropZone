@@ -1,0 +1,11 @@
+# cPanel's Apache (mod_php/PHP-FPM/CGI) does not pass the Authorization header
+# to PHP by default — forward it explicitly, or every Bearer-token admin
+# request 401s even though the browser sent it correctly.
+RewriteEngine On
+RewriteCond %{HTTP:Authorization} ^(.*)
+RewriteRule ^ - [E=HTTP_AUTHORIZATION:%1]
+
+# Route every request that isn't a real file (uploads/, etc.) through the front controller.
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ index.php [L]

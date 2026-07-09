@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { api } from '@/lib/api';
 import { useRouter, useSearchParams } from 'next/navigation';
 import DatePicker from '@/components/DatePicker';
@@ -19,6 +19,14 @@ type CampaignApiResponse = {
 };
 
 export default function CampaignsPage() {
+  return (
+    <Suspense fallback={<div className="muted">Loading…</div>}>
+      <CampaignsPageInner />
+    </Suspense>
+  );
+}
+
+function CampaignsPageInner() {
   const searchParams = useSearchParams();
   const isNew = searchParams.get('new');
 
@@ -51,7 +59,7 @@ function CampaignList() {
   }, []);
 
   const handleEdit = (id: number) => {
-    router.push(`/campaigns/${id}`);
+    router.push(`/campaigns/detail?id=${id}`);
   };
 
   const handleCreate = () => {

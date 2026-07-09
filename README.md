@@ -65,6 +65,56 @@ npm run dev                    # http://localhost:3000
 - **Completion** — enrollment marked complete once every box is terminal.
 - **Audit** — every transition written to `box_events`.
 
+## 3. Deploying to cPanel (no Node.js required)
+
+The backend is dependency-free PHP (no Composer, no build step) and the frontend
+is a fully client-rendered Next.js app (no server actions/middleware/route
+handlers), so both run on plain cPanel hosting — frontend as static files,
+backend as plain PHP under Apache. This layout assumes the frontend and API
+share one domain, with the API mounted at `/api`:
+
+```
+public_html/
+├── index.html, _next/, login/, play/, ...   ← frontend/out/*  (static export)
+├── api/            ← backend/public/*        (index.php + .htaccess — web-facing)
+├── src/            ← backend/src/*           (blocked from direct HTTP access)
+├── config/         ← backend/config/*        (config.php + DB creds — blocked)
+├── migrations/     ← backend/migrations/*    (blocked; one-time use)
+└── cron/           ← backend/cron/*          (blocked; invoked via CLI/cron only)
+```
+
+`backend/public/index.php` locates its dependencies via `__DIR__ . '/../src'` etc.,
+so `src/`, `config/`, `migrations/`, `cron/`, and `public/` must stay siblings —
+i.e. upload the entire `backend/` folder's contents into `public_html/` and treat
+`public/` as `api/`. The non-`api` folders each ship a `.htaccess` that denies all
+direct HTTP requests (defense in depth — PHP always executes `.php` files rather
+than serving their source, but the deny rule blocks the folder outright).
+
+**Backend:**
+```bash
+# on the server, inside public_html/config/
+cp config.example.php config.php   # edit DB creds
+php ../cron/migrate.php            # apply migrations (once)
+php ../cron/seed.php               # demo data (optional)
+```
+Then schedule `php /home/USER/public_html/cron/close_drops.php` every 5 minutes
+via cPanel's Cron Jobs UI.
+
+**Frontend:**
+```bash
+cd frontend
+npm run build:cpanel   # next build with output:'export', API base left relative ("/api")
+```
+Upload the contents of `frontend/out/` to `public_html/`. The build already embeds
+relative `/api/...` calls (see `frontend/lib/api.ts`), so no domain needs to be
+hardcoded — it works on whatever domain serves it, as long as the PHP API is
+reachable at `/api` on that same domain. Local dev is unaffected: `frontend/.env.local`
+still points `npm run dev` at `http://localhost:8080`.
+
+If you instead host the API on a separate subdomain, set
+`NEXT_PUBLIC_API_BASE=https://api.yourdomain.com npm run build` and point
+`cors_origins` in `config.php` at the frontend's origin.
+
 ## API surface
 
 Public: `GET /api/health`, `GET /api/campaigns/active`, `POST /api/enroll`,

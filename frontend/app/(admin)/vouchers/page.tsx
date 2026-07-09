@@ -90,7 +90,7 @@ export default function VouchersPage() {
         <VoucherForm
           initial={editing}
           onClose={() => setEditing(null)}
-          onSaved={(patch) => { setEditing(null); applyUpdate(patch); load(); }}
+          onSaved={(patch) => { setEditing(null); if (patch) applyUpdate(patch); load(); }}
         />
       )}
     </>

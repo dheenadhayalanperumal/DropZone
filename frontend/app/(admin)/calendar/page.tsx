@@ -75,7 +75,7 @@ export default function CalendarPage() {
             <Meta label="Enrolled" value={String(campaign.enrolled ?? 0)} />
             <div className="spacer" />
             <span className={`chip ${campaign.active ? 'green' : ''}`}>{campaign.active ? 'active' : 'inactive'}</span>
-            <Link className="btn secondary sm" href={`/campaigns/${campaign.id}`}>Edit campaign</Link>
+            <Link className="btn secondary sm" href={`/campaigns/detail?id=${campaign.id}`}>Edit campaign</Link>
           </div>
           {campaign.description && <p className="muted" style={{ margin: '12px 0 0', fontSize: 13 }}>{campaign.description}</p>}
         </div>

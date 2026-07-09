@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "build:cpanel": "NEXT_PUBLIC_API_BASE= next build",
     "start": "next start",
     "lint": "next lint"
   },
