@@ -227,6 +227,7 @@ function Play({ brand, user, drops, reload, signOut }: { brand: Brand; user: { i
 
   async function doOpen() {
     if (!focus || !canOpen) return;
+    if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate([30, 40, 30]);
     setBusy(true); setBoxOpen(true);
     try {
       const resp = await api<OpenResp>(`/api/boxes/${focus.drop_id}/open`, {
