@@ -58,7 +58,7 @@ final class AdminController
         Response::json($row);
     }
 
-    /** Accept a base64 image data URL, store it under public/uploads, return its URL. */
+    /** Accept a base64 image data URL, store it in this front controller's uploads/ dir, return its URL. */
     public function upload(): void
     {
         Auth::requireAdmin();
@@ -76,13 +76,13 @@ final class AdminController
         if ($bytes === false) throw new ApiException('bad_file', 'Invalid base64 data', 422);
         if (strlen($bytes) > 3_000_000) throw new ApiException('too_large', 'Image exceeds 3MB', 413);
 
-        $dir = __DIR__ . '/../../public/uploads';
+        $dir = DZ_PUBLIC_DIR . '/uploads';
         if (!is_dir($dir)) @mkdir($dir, 0775, true);
         $name = 'logo_' . bin2hex(random_bytes(6)) . '.' . $ext;
         if (file_put_contents("$dir/$name", $bytes) === false) {
             throw new ApiException('write_failed', 'Could not store the file', 500);
         }
-        Response::json(['url' => '/uploads/' . $name], 201);
+        Response::json(['url' => DZ_BASE_PATH . '/uploads/' . $name], 201);
     }
 
     // ---- Vouchers ----

@@ -24,6 +24,12 @@ spl_autoload_register(function (string $class): void {
 // Response.php also defines ApiException in the same file.
 require_once __DIR__ . '/../src/Response.php';
 
+// This folder may be deployed under any name (e.g. renamed to "api/" on
+// cPanel) and mounted at the site root or a subfolder — controllers must
+// resolve upload paths/URLs from here rather than hardcoding "public"/"api".
+define('DZ_PUBLIC_DIR', __DIR__);
+define('DZ_BASE_PATH', rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? '/index.php')), '/'));
+
 // --- CORS ---
 $cfg = Auth::config();
 $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
